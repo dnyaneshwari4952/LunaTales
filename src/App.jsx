@@ -5,7 +5,11 @@ import FiltersPanel from './components/FiltersPanel'
 import NarrationControls from './components/NarrationControls'
 import ProgressTracking from './components/ProgressTracking'
 import GoodnightRitual from './components/GoodnightRitual'
+import Story from './components/Story'
 import InteractiveStorytelling from './components/InteractiveStorytelling'
+import Dashboard from './components/Dashboard'
+import DreamStars from './components/DreamStars'
+import StoryHistory from './components/StoryHistory'
 import { generateStory } from './components/StoryGenerator'
 
 // Magical Starry Background Component
@@ -106,6 +110,8 @@ function App() {
   const [dreamStars, setDreamStars] = useState(0)
   const [storyHistory, setStoryHistory] = useState([])
   const [showRitual, setShowRitual] = useState(false)
+  const [showFilters, setShowFilters] = useState(false)
+  const [showDashboard, setShowDashboard] = useState(false)
   
   const speechSynthesis = useRef(null)
   const currentUtterance = useRef(null)
@@ -232,52 +238,56 @@ function App() {
     <div className="min-h-screen relative overflow-hidden">
       <MagicalStarryBackground />
       
-      <div className="relative z-10 container mx-auto px-4 py-8 animate-fade-in">
-        <header className="text-center mb-12">
-          <h1 className="text-6xl font-fairy text-white mb-4 animate-glow" style={{
-            background: 'linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #feca57)',
-            backgroundSize: '400% 400%',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            animation: 'gradient-shift 3s ease infinite'
-          }}>
-            🌙 MAGICAL Bedtime Storyteller ✨
-          </h1>
-          <p className="text-magical-lavender-300 text-xl font-body">
-            Create magical bedtime stories for your little one 🧚‍♀️
-          </p>
-          <div className="mt-6 flex justify-center space-x-4 text-2xl animate-float">
-            <span className="animate-wiggle">🐻</span>
-            <span className="animate-wiggle" style={{animationDelay: '0.2s'}}>🚀</span>
-            <span className="animate-wiggle" style={{animationDelay: '0.4s'}}>⭐</span>
-          </div>
-        </header>
+      {/* Main Content - Only visible when filters and dashboard are closed */}
+      {!showFilters && !showDashboard && (
+        <div className="relative z-10 container mx-auto px-4 py-8 animate-fade-in">
+          <header className="text-center mb-12">
+            <div className="flex flex-col sm:flex-row justify-between items-center mb-4 gap-4">
+              <button
+                onClick={() => setShowDashboard(!showDashboard)}
+                className="button-primary text-lg px-6 py-3 flex items-center space-x-2 animate-pulse"
+              >
+                <span>📊</span>
+                <span>Dashboard</span>
+              </button>
+              <h1 className="text-4xl sm:text-6xl font-fairy text-white animate-glow flex-1 text-center" style={{
+                background: 'linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #feca57)',
+                backgroundSize: '400% 400%',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                animation: 'gradient-shift 3s ease infinite'
+              }}>
+                🌙 MAGICAL Bedtime Storyteller ✨
+              </h1>
+              <button
+                onClick={() => setShowFilters(!showFilters)}
+                className="button-primary text-lg px-6 py-3 flex items-center space-x-2 animate-pulse"
+              >
+                <span>🎛️</span>
+                <span>Filters</span>
+              </button>
+            </div>
+            <p className="text-magical-lavender-300 text-xl font-body">
+              Create magical bedtime stories for your little one 🧚‍♀️
+            </p>
+            <div className="mt-6 flex justify-center space-x-4 text-2xl animate-float">
+              <span className="animate-wiggle">🐻</span>
+              <span className="animate-wiggle" style={{animationDelay: '0.2s'}}>🚀</span>
+              <span className="animate-wiggle" style={{animationDelay: '0.4s'}}>⭐</span>
+            </div>
+          </header>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Left Column - Controls */}
           <div className="space-y-8">
             <div className="animate-slide-up" style={{animationDelay: '0.1s'}}>
-              <PersonalizationForm 
-                childData={childData} 
-                onUpdate={setChildData} 
-              />
-            </div>
-            
-            <div className="animate-slide-up" style={{animationDelay: '0.2s'}}>
-              <FiltersPanel 
-                settings={settings} 
-                onSettingsChange={setSettings} 
-              />
-            </div>
-            
-            <div className="animate-slide-up" style={{animationDelay: '0.3s'}}>
               <ProgressTracking 
                 dreamStars={dreamStars} 
                 storyHistory={storyHistory} 
               />
             </div>
             
-            <div className="animate-slide-up" style={{animationDelay: '0.4s'}}>
+            <div className="animate-slide-up" style={{animationDelay: '0.2s'}}>
               <GoodnightRitual onStartRitual={handleStartRitual} />
             </div>
           </div>
@@ -292,9 +302,18 @@ function App() {
               
               {currentStory ? (
                 <div className="space-y-6">
-                  <h3 className="text-2xl font-fairy text-star-gold-400 animate-glow">
-                    ✨ {currentStory.title} ✨
-                  </h3>
+                  <div className="flex justify-between items-center">
+                    <h3 className="text-2xl font-fairy text-star-gold-400 animate-glow">
+                      ✨ {currentStory.title} ✨
+                    </h3>
+                    <button 
+                      onClick={generateNewStory}
+                      className="button-primary text-sm px-4 py-2 flex items-center space-x-2"
+                    >
+                      <span>✨</span>
+                      <span>New Story</span>
+                    </button>
+                  </div>
                   
                   {settings.parentalPreview && (
                     <div className="space-y-4">
@@ -351,13 +370,22 @@ function App() {
             {currentStory && (
               <>
                 <div className="animate-slide-up" style={{animationDelay: '0.6s'}}>
+                  <Story
+                    story={currentStory}
+                    childData={childData}
+                    settings={settings}
+                    onGenerateNew={generateNewStory}
+                  />
+                </div>
+                
+                <div className="animate-slide-up" style={{animationDelay: '0.7s'}}>
                   <InteractiveStorytelling
                     story={currentStory}
                     onStoryUpdate={handleStoryUpdate}
                   />
                 </div>
                 
-                <div className="animate-slide-up" style={{animationDelay: '0.7s'}}>
+                <div className="animate-slide-up" style={{animationDelay: '0.8s'}}>
                   <NarrationControls
                     isPlaying={isPlaying}
                     isPaused={isPaused}
@@ -391,8 +419,127 @@ function App() {
               </div>
             )}
           </div>
+          </div>
         </div>
-      </div>
+      )}
+
+      {/* Filters Panel - Full Screen */}
+      {showFilters && (
+        <div className="fixed inset-0 z-50 bg-slate-900 filters-container">
+          {/* Header */}
+          <div className="h-16 bg-slate-800 border-b border-purple-400/30 flex items-center justify-between px-6">
+            <h1 className="text-2xl font-fairy text-white">
+              🎛️ Story Settings & Personalization
+            </h1>
+            <div className="flex items-center space-x-4">
+              <button
+                onClick={() => setShowFilters(false)}
+                className="button-primary text-sm px-4 py-2 flex items-center space-x-2"
+              >
+                <span>🏠</span>
+                <span>Back to Home</span>
+              </button>
+              <button
+                onClick={() => setShowFilters(false)}
+                className="text-white hover:text-star-gold-400 text-xl p-2 rounded-full"
+              >
+                ✕
+              </button>
+            </div>
+          </div>
+
+          {/* Main Content Container */}
+          <div className="flex h-full filters-content" style={{ height: 'calc(100vh - 64px)' }}>
+            {/* Left Side - Personalization */}
+            <div className="flex-1 p-4 border-r border-purple-400/20">
+              <div className="h-full filters-scroll">
+                <h2 className="text-lg font-fairy text-star-gold-400 mb-4 flex items-center">
+                  <span className="mr-2">✨</span>
+                  Personalize Your Magical Story
+                </h2>
+                <div className="filters-content">
+                  <PersonalizationForm 
+                    childData={childData} 
+                    onUpdate={setChildData} 
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Right Side - Story Settings */}
+            <div className="flex-1 p-4">
+              <div className="h-full filters-scroll">
+                <h2 className="text-lg font-fairy text-star-gold-400 mb-4 flex items-center">
+                  <span className="mr-2">🎛️</span>
+                  Magical Story Settings
+                </h2>
+                <div className="filters-content">
+                  <FiltersPanel 
+                    settings={settings} 
+                    onSettingsChange={setSettings} 
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Dashboard Panel - Full Screen */}
+      {showDashboard && (
+        <div className="fixed inset-0 z-50 bg-slate-900 filters-container">
+          {/* Header */}
+          <div className="h-16 bg-slate-800 border-b border-purple-400/30 flex items-center justify-between px-6">
+            <h1 className="text-2xl font-fairy text-white">
+              📊 Your Magical Dashboard
+            </h1>
+            <div className="flex items-center space-x-4">
+              <button
+                onClick={() => setShowDashboard(false)}
+                className="button-primary text-sm px-4 py-2 flex items-center space-x-2"
+              >
+                <span>🏠</span>
+                <span>Back to Home</span>
+              </button>
+              <button
+                onClick={() => setShowDashboard(false)}
+                className="text-white hover:text-star-gold-400 text-xl p-2 rounded-full"
+              >
+                ✕
+              </button>
+            </div>
+          </div>
+
+          {/* Main Content Container */}
+          <div className="flex h-full filters-content" style={{ height: 'calc(100vh - 64px)' }}>
+            {/* Left Side - Dream Stars */}
+            <div className="flex-1 p-4 border-r border-purple-400/20">
+              <div className="h-full filters-scroll">
+                <h2 className="text-lg font-fairy text-star-gold-400 mb-4 flex items-center">
+                  <span className="mr-2">⭐</span>
+                  Dream Stars & Achievements
+                </h2>
+                <div className="filters-content">
+                  <DreamStars dreamStars={dreamStars} />
+                </div>
+              </div>
+            </div>
+
+            {/* Right Side - Story History */}
+            <div className="flex-1 p-4">
+              <div className="h-full filters-scroll">
+                <h2 className="text-lg font-fairy text-star-gold-400 mb-4 flex items-center">
+                  <span className="mr-2">📚</span>
+                  Story History & Adventures
+                </h2>
+                <div className="filters-content">
+                  <StoryHistory storyHistory={storyHistory} />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
