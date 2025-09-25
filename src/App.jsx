@@ -226,8 +226,7 @@ function App() {
   }
 
   const handleStartRitual = (ritualType) => {
-    // Mock ritual implementation
-    alert(`Starting ${ritualType} ritual... This would play calming sounds or guide breathing exercises.`)
+    // Ritual started (audio/timers handled inside GoodnightRitual)
   }
 
   const handleStoryUpdate = (updatedStory) => {
