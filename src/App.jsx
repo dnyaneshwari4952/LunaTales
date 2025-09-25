@@ -280,13 +280,6 @@ function App() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Left Column - Controls */}
           <div className="space-y-8">
-            <div className="animate-slide-up" style={{animationDelay: '0.1s'}}>
-              <ProgressTracking 
-                dreamStars={dreamStars} 
-                storyHistory={storyHistory} 
-              />
-            </div>
-            
             <div className="animate-slide-up" style={{animationDelay: '0.2s'}}>
               <GoodnightRitual onStartRitual={handleStartRitual} />
             </div>
